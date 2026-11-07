@@ -662,25 +662,66 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
   function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
   function fit(x,t,max){if(x.measureText(t).width<=max)return t;while(t.length>1&&x.measureText(t+'…').width>max)t=t.slice(0,-1);return t+'…'}
   var emblem=new Image();emblem.src='images/logo-embleme.png';
+  var SERIF='"Cormorant Garamond", Georgia, serif',SANS='Manrope, system-ui, -apple-system, sans-serif';
+  // On charge les polices du reçu à l'avance (le dessin doit être immédiat au clic)
+  try{if(document.fonts&&document.fonts.load){['400 70px "Cormorant Garamond"','500 46px "Cormorant Garamond"','italic 400 38px "Cormorant Garamond"','600 28px Manrope','400 27px Manrope','500 22px Manrope'].forEach(function(f){document.fonts.load(f).catch(function(){})})}}catch(e){}
   function draw(r){
-    var W=1080,H=1830,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
-    var g=x.createRadialGradient(W/2,-100,50,W/2,200,1150);g.addColorStop(0,'#2a3a22');g.addColorStop(.45,'#0c241b');g.addColorStop(1,'#071812');x.fillStyle=g;x.fillRect(0,0,W,H);
-    var h=x.createRadialGradient(W/2,190,10,W/2,190,260);h.addColorStop(0,'rgba(255,226,150,.35)');h.addColorStop(1,'rgba(214,178,94,0)');x.fillStyle=h;x.fillRect(0,0,W,460);
-    x.strokeStyle='rgba(214,178,94,.55)';x.lineWidth=2;x.strokeRect(40,40,W-80,H-80);x.textAlign='center';
-    try{if(emblem.complete&&emblem.naturalWidth)x.drawImage(emblem,W/2-120,90,240,194)}catch(e){}
-    x.fillStyle='#eadbb0';x.font='500 34px Georgia, serif';x.fillText('RÉSIDENCE MEUBLÉE BINGERVILLE',W/2,330);
-    x.fillStyle='#d6b25e';x.font='300 64px Georgia, serif';x.fillText('Reçu de réservation',W/2,430);
-    x.fillStyle='#f3eee2';x.font='400 46px Georgia, serif';x.fillText(r.ref,W/2,510);
-    x.fillStyle='rgba(214,178,94,.15)';rr(x,W/2-230,545,460,60,30);x.fill();x.fillStyle='#eadbb0';x.font='500 26px system-ui, sans-serif';x.fillText('En attente de vérification',W/2,585);
-    var rows=[['Client',r.nom],['WhatsApp',r.tel],['Logement',r.loge],['Quartier',r.quartier],['Formule',r.forf],['Arrivée',r.debut],['Départ',r.fin],['Personnes',r.pers],['Paiement',r.mode],['Payé depuis le',r.payeur],['Date du reçu',r.date]];
-    var y=690;rows.forEach(function(row){x.textAlign='left';x.fillStyle='#9fb5a8';x.font='400 28px system-ui, sans-serif';x.fillText(row[0],110,y);
-      x.textAlign='right';x.fillStyle='#f3eee2';x.font='500 30px system-ui, sans-serif';x.fillText(fit(x,String(row[1]),600),W-110,y);
-      x.strokeStyle='rgba(243,238,226,.08)';x.lineWidth=1;x.beginPath();x.moveTo(110,y+28);x.lineTo(W-110,y+28);x.stroke();y+=66});
-    y+=40;x.fillStyle='rgba(214,178,94,.1)';rr(x,110,y,W-220,120,24);x.fill();x.strokeStyle='rgba(214,178,94,.45)';x.stroke();
-    x.textAlign='left';x.fillStyle='#eadbb0';x.font='400 30px system-ui, sans-serif';x.fillText('Montant payé',150,y+72);
-    x.textAlign='right';x.fillStyle='#f3eee2';x.font='500 60px Georgia, serif';x.fillText(r.total,W-150,y+80);
-    x.textAlign='center';x.fillStyle='#9fb5a8';x.font='400 26px system-ui, sans-serif';x.fillText('Réservation confirmée après vérification du paiement.',W/2,H-200);x.fillText('WhatsApp : 07 77 93 81 88',W/2,H-160);
-    x.fillStyle='#d6b25e';x.font='italic 300 34px Georgia, serif';x.fillText('Plus qu’un séjour… une expérience.',W/2,H-95);
+    var W=1080,H=2060,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
+    var INK='#13281f',MUTED='#7a8880',GOLD='#b8913d',LINE='#ebe4d2';
+    var logo=emblem.complete&&emblem.naturalWidth;
+    function spaced(t,px,y,sp,align){
+      var ch=Array.from(t),w=sp*(ch.length-1);ch.forEach(function(c){w+=x.measureText(c).width});
+      if(align==='center')px-=w/2;else if(align==='right')px-=w;
+      var save=x.textAlign;x.textAlign='left';ch.forEach(function(c){x.fillText(c,px,y);px+=x.measureText(c).width+sp});x.textAlign=save;return w;
+    }
+    // Papier ivoire
+    var g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#fffdf9');g.addColorStop(1,'#f9f5ec');x.fillStyle=g;x.fillRect(0,0,W,H);
+    // Lueur dorée très douce derrière le logo
+    var h=x.createRadialGradient(W/2,190,10,W/2,190,340);h.addColorStop(0,'rgba(230,196,112,.20)');h.addColorStop(1,'rgba(230,196,112,0)');x.fillStyle=h;x.fillRect(0,0,W,560);
+    // Logo en filigrane
+    if(logo){x.globalAlpha=.03;x.drawImage(emblem,W/2-340,860,680,549);x.globalAlpha=1}
+    // Double cadre doré et petits losanges aux coins
+    x.strokeStyle=GOLD;x.lineWidth=2;x.strokeRect(34,34,W-68,H-68);
+    x.globalAlpha=.4;x.lineWidth=1;x.strokeRect(48,48,W-96,H-96);x.globalAlpha=1;
+    x.fillStyle=GOLD;[[48,48],[W-48,48],[48,H-48],[W-48,H-48]].forEach(function(c){x.save();x.translate(c[0],c[1]);x.rotate(Math.PI/4);x.fillRect(-6,-6,12,12);x.restore()});
+    // En-tête
+    x.textAlign='center';
+    if(logo)x.drawImage(emblem,W/2-112,92,224,181);
+    x.fillStyle=INK;x.font='600 29px '+SANS;spaced('RÉSIDENCE MEUBLÉE',W/2,334,9,'center');
+    x.fillStyle=GOLD;x.font='500 22px '+SANS;var bw=spaced('BINGERVILLE',W/2,374,12,'center');
+    x.strokeStyle=GOLD;x.lineWidth=1.2;x.beginPath();x.moveTo(W/2-bw/2-90,366);x.lineTo(W/2-bw/2-24,366);x.moveTo(W/2+bw/2+24,366);x.lineTo(W/2+bw/2+90,366);x.stroke();
+    x.fillStyle=INK;x.font='400 74px '+SERIF;x.fillText('Reçu de réservation',W/2,486);
+    x.fillStyle=GOLD;x.font='500 46px '+SERIF;spaced(r.ref,W/2,552,3,'center');
+    // Statut
+    x.font='600 23px '+SANS;var st='En attente de vérification',sw=x.measureText(st).width+86;
+    rr(x,W/2-sw/2,588,sw,54,27);x.fillStyle='#f7eed6';x.fill();x.strokeStyle='rgba(184,145,61,.45)';x.lineWidth=1.2;x.stroke();
+    x.fillStyle='#c9952c';x.beginPath();x.arc(W/2-sw/2+32,615,6,0,Math.PI*2);x.fill();
+    x.fillStyle='#8a6620';x.textAlign='left';x.fillText(st,W/2-sw/2+50,623);x.textAlign='center';
+    // Détails, par rubrique
+    var y=712;
+    function section(t){
+      x.fillStyle=GOLD;x.font='600 20px '+SANS;var w=spaced(t,110,y,6,'left');
+      x.strokeStyle=LINE;x.lineWidth=1.5;x.beginPath();x.moveTo(110+w+22,y-7);x.lineTo(W-110,y-7);x.stroke();y+=58;
+    }
+    function row(k,v){
+      x.textAlign='left';x.fillStyle=MUTED;x.font='400 27px '+SANS;x.fillText(k,110,y);
+      x.textAlign='right';x.fillStyle=INK;x.font='600 28px '+SANS;x.fillText(fit(x,String(v),560),W-110,y);
+      x.strokeStyle=LINE;x.lineWidth=1;x.setLineDash([2,7]);x.beginPath();x.moveTo(110,y+24);x.lineTo(W-110,y+24);x.stroke();x.setLineDash([]);y+=60;
+    }
+    section('CLIENT');row('Nom',r.nom);row('WhatsApp',r.tel);y+=22;
+    section('SÉJOUR');row('Logement',r.loge);row('Quartier',r.quartier);row('Formule',r.forf);row('Arrivée',r.debut);row('Départ',r.fin);row('Personnes',r.pers);y+=22;
+    section('PAIEMENT');row('Moyen de paiement',r.mode);row('Payé depuis le',r.payeur);row('Date du reçu',r.date);
+    // Montant
+    y+=26;rr(x,110,y,W-220,138,22);x.fillStyle='#fbf5e6';x.fill();x.strokeStyle='rgba(184,145,61,.55)';x.lineWidth=1.5;x.stroke();
+    x.fillStyle=MUTED;x.font='600 20px '+SANS;spaced('MONTANT PAYÉ',150,y+80,5,'left');
+    x.textAlign='right';x.fillStyle=INK;x.font='500 72px '+SERIF;x.fillText(r.total,W-150,y+92);x.textAlign='center';
+    // Pied du reçu
+    var fy=H-220;
+    var lg=x.createLinearGradient(W/2-160,0,W/2+160,0);lg.addColorStop(0,'rgba(184,145,61,0)');lg.addColorStop(.5,GOLD);lg.addColorStop(1,'rgba(184,145,61,0)');
+    x.strokeStyle=lg;x.lineWidth=1.5;x.beginPath();x.moveTo(W/2-160,fy);x.lineTo(W/2+160,fy);x.stroke();
+    x.fillStyle=GOLD;x.font='italic 400 40px '+SERIF;x.fillText('Plus qu’un séjour… une expérience.',W/2,fy+62);
+    x.fillStyle=MUTED;x.font='400 23px '+SANS;x.fillText('Réservation confirmée après vérification du paiement.',W/2,fy+112);
+    x.fillText('WhatsApp +225 07 77 93 81 88  ·  Bingerville, Côte d’Ivoire',W/2,fy+148);
     return cv;
   }
 
