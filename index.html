@@ -210,6 +210,17 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
 .fmsg::before{content:"⚠ "}
 .grp+.grp{margin-top:0}
 
+/* Acompte */
+.opt.plan{text-align:left}
+.acbox{margin-top:.85rem}.acbox[hidden]{display:none}
+.money{position:relative}
+.money input{padding-right:4.8rem;font-family:var(--serif);font-size:1.35rem;font-weight:500}
+.money span{position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:.78rem;color:var(--sage);letter-spacing:.06em}
+.rest{font-size:.78rem;color:var(--sage);margin-top:.5rem}
+.due{text-align:center;margin:1.1rem 0 1rem;padding:.85rem;border-radius:1rem;background:rgba(214,178,94,.07);border:1px solid rgba(214,178,94,.28);font-size:.74rem;letter-spacing:.06em;color:var(--gold-soft)}
+.due[hidden]{display:none}
+.due b{display:block;margin-top:.15rem;font-family:var(--serif);font-size:1.8rem;letter-spacing:0;color:var(--ivory);font-weight:500}
+
 /* Étape 4 */
 .pay.soft{margin-bottom:0;padding:.7rem 1rem .7rem .75rem;border-color:rgba(214,178,94,.26);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
 .pay.soft strong{font-size:.95rem}
@@ -398,6 +409,20 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
   <section class="step" aria-labelledby="s3">
     <div class="step-head"><span class="num">3</span><h2 id="s3">Paiement</h2></div>
     <p class="amount" id="payAmount">Choisissez d’abord votre séjour.</p>
+    <div class="grp" id="g-acompte" hidden>
+      <p class="q">Combien payez-vous maintenant ?</p>
+      <div class="opts two" id="payOpts">
+        <button type="button" class="opt plan" data-v="acompte" aria-pressed="true"><span class="tick"></span><span class="t">Un acompte</span><span class="s" id="acMin"></span></button>
+        <button type="button" class="opt plan" data-v="total" aria-pressed="false"><span class="tick"></span><span class="t">La totalité</span><span class="s" id="acTot"></span></button>
+      </div>
+      <div class="acbox" id="acBox">
+        <label for="acompte">Montant de l’acompte</label>
+        <div class="money"><input id="acompte" type="number" inputmode="numeric" step="500" min="0"><span>F CFA</span></div>
+        <p class="rest" id="acRest"></p>
+      </div>
+      <p class="fmsg" role="alert"></p>
+    </div>
+    <p class="due" id="due" hidden>À saisir dans Wave ou Orange Money<b id="dueVal"></b></p>
     <div class="grp" id="g-pay">
       <a class="pay" id="payWave" data-mode="Wave" href="https://pay.wave.com/m/M_ci_1PtQyn9MBIqb/c/ci/">
         <span class="tile wave"><img src="images/wave.png" alt="" width="120" height="120"></span>
@@ -480,7 +505,9 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
     {id:'nuit',t:'Nuitée',         s:'De 18h à midi',           price:{studio:20000,'2p':20000}, qty:'nuits'}
   ];
   // stage : '' (en cours), 'paying' (parti payer), 'paid' (revenu du paiement)
-  var S={loge:null,quartier:null,forf:null,day:null,hour:null,qty:1,pers:2,mode:null,ref:null,stage:'',waSent:false};
+  var S={loge:null,quartier:null,forf:null,day:null,hour:null,qty:1,pers:2,mode:null,ref:null,stage:'',waSent:false,plan:'acompte',acompte:null};
+  // Acompte minimum pour bloquer une réservation (F CFA)
+  var ACOMPTE_MIN={studio:5000,'2p':10000};
   var money=function(n){return n.toLocaleString('fr-FR').replace(/ | /g,' ')+' F'};
   var JOURS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
   var JL=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'],ML=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
@@ -499,7 +526,7 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
   }
 
   // ----- Logement -----
-  function setLoge(v){S.loge=v;press($('logements'),$('logements').querySelector('[data-v="'+v+'"]'));unflag('g-loge');renderForfaits();update()}
+  function setLoge(v){if(S.loge!==v)S.acompte=null;S.loge=v;press($('logements'),$('logements').querySelector('[data-v="'+v+'"]'));unflag('g-loge');renderForfaits();update()}
   $('logements').addEventListener('click',function(e){var b=e.target.closest('.opt');if(b){setLoge(b.dataset.v);save()}});
 
   // ----- Quartier : bouton qui se déplie -----
@@ -582,9 +609,30 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
     $('qVal').textContent=S.qty;$('qMinus').disabled=S.qty<=1;$('pVal').textContent=S.pers;$('pMinus').disabled=S.pers<=1;
     var p=periode(),t=total();
     if(p&&t){$('recWhen').textContent=LOGE[S.loge]+(S.quartier?' à '+S.quartier:'')+' · '+f.t+(f.qty&&S.qty>1?' × '+S.qty:'')+' · '+p.court;$('recTot').textContent=money(t);$('recap').classList.add('show');
-      $('payAmount').innerHTML='Montant à payer<br><b>'+money(t)+'</b>'}
-    else{$('recap').classList.remove('show');$('payAmount').textContent='Choisissez d’abord votre séjour.'}
+      $('payAmount').innerHTML='Total du séjour<br><b>'+money(t)+'</b>';updatePay()}
+    else{$('recap').classList.remove('show');$('payAmount').textContent='Choisissez d’abord votre séjour.';$('g-acompte').hidden=true;$('due').hidden=true}
   }
+
+  // ----- Acompte ou totalité -----
+  function minAcompte(){return ACOMPTE_MIN[S.loge]||5000}
+  function canAcompte(){return total()>minAcompte()}
+  function plan(){return canAcompte()?S.plan:'total'}
+  function due(){var t=total();if(!t)return 0;return plan()==='total'?t:(S.acompte||minAcompte())}
+  function updatePay(){
+    var t=total(),min=minAcompte(),inp=$('acompte'),typing=document.activeElement===inp;
+    $('g-acompte').hidden=false;$('due').hidden=false;
+    $('payOpts').querySelector('[data-v="acompte"]').hidden=!canAcompte();$('payOpts').classList.toggle('two',canAcompte());
+    press($('payOpts'),$('payOpts').querySelector('[data-v="'+plan()+'"]'));
+    $('acMin').textContent='Dès '+money(min);$('acTot').textContent=money(t);
+    if(!typing){if(!S.acompte)S.acompte=min;if(S.acompte>t)S.acompte=t;inp.value=S.acompte}
+    inp.min=String(min);inp.max=String(t);
+    $('acBox').hidden=plan()!=='acompte';
+    var d=due();$('dueVal').textContent=money(d);
+    $('acRest').textContent=d<t?'Reste à régler à votre arrivée : '+money(t-d):'';
+  }
+  $('payOpts').addEventListener('click',function(e){var b=e.target.closest('.opt');if(!b)return;S.plan=b.dataset.v;unflag('g-acompte');updatePay();save()});
+  $('acompte').addEventListener('input',function(){S.acompte=Math.round(Number(this.value))||0;unflag('g-acompte');updatePay();save()});
+  $('acompte').addEventListener('blur',function(){updatePay();save()});
   update();
 
   // ----- Vérification, dans l'ordre de la page -----
@@ -596,6 +644,10 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
     if(S.forf==='2h'&&S.hour===null)return flag('g-hour','Choisissez votre heure d’arrivée.');
     if($('nom').value.trim().length<3)return flag('g-nom','Écrivez votre nom et prénom.',$('nom'));
     if($('tel').value.replace(/\D/g,'').length<8)return flag('g-tel','Écrivez votre numéro WhatsApp.',$('tel'));
+    if(plan()==='acompte'){
+      if(S.acompte<minAcompte())return flag('g-acompte','L’acompte minimum est de '+money(minAcompte())+' pour '+(S.loge==='studio'?'un studio.':'un deux pièces.'),$('acompte'));
+      if(S.acompte>total())return flag('g-acompte','L’acompte ne peut pas dépasser le total ('+money(total())+').',$('acompte'));
+    }
     return '';
   }
   ['nom','tel','payeur'].forEach(function(i){$(i).addEventListener('input',function(){unflag('g-'+i);save()})});
@@ -644,12 +696,13 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
     var f=forf(),p=periode();
     return {ref:S.ref,nom:$('nom').value.trim(),tel:$('tel').value.trim(),loge:LOGE[S.loge],quartier:S.quartier,
       forf:f.t+(f.qty?' × '+S.qty+' '+(S.qty>1?f.qty:f.qty.slice(0,-1)):''),debut:p.debut,fin:p.fin,pers:String(S.pers),
-      mode:S.mode,payeur:$('payeur').value.trim(),date:new Date().toLocaleDateString('fr-FR'),total:money(total())};
+      mode:S.mode,payeur:$('payeur').value.trim(),date:new Date().toLocaleDateString('fr-FR'),total:money(total()),
+      verse:money(due()),reste:total()-due()>0?money(total()-due()):'',plan:due()<total()?'Acompte':'Totalité'};
   }
   $('wa').addEventListener('click',function(e){
     if(needPayment()){e.preventDefault();return}
     var r=details();
-    var txt='Bonjour Résidence Meublée Bingerville, voici la capture de mon dépôt.\n\nRéservation : '+r.ref+'\nNom : '+r.nom+'\nLogement : '+r.loge+'\nQuartier : '+r.quartier+'\nFormule : '+r.forf+'\nArrivée : '+r.debut+'\nDépart : '+r.fin+'\nPersonnes : '+r.pers+'\nMontant payé : '+r.total+'\nPaiement : '+r.mode+'\n\n(Capture du dépôt jointe)';
+    var txt='Bonjour Résidence Meublée Bingerville, voici la capture de mon dépôt.\n\nRéservation : '+r.ref+'\nNom : '+r.nom+'\nLogement : '+r.loge+'\nQuartier : '+r.quartier+'\nFormule : '+r.forf+'\nArrivée : '+r.debut+'\nDépart : '+r.fin+'\nPersonnes : '+r.pers+'\nMontant payé : '+r.verse+' ('+r.plan.toLowerCase()+')\nTotal du séjour : '+r.total+(r.reste?'\nReste à payer à l’arrivée : '+r.reste:'')+'\nPaiement : '+r.mode+'\n\n(Capture du dépôt jointe)';
     this.href='https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(txt);
     S.waSent=true;save();$('waDone').hidden=false;unflag('g-wa');
   });
@@ -666,7 +719,7 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
   // On charge les polices du reçu à l'avance (le dessin doit être immédiat au clic)
   try{if(document.fonts&&document.fonts.load){['400 70px "Cormorant Garamond"','500 46px "Cormorant Garamond"','italic 400 38px "Cormorant Garamond"','600 28px Manrope','400 27px Manrope','500 22px Manrope'].forEach(function(f){document.fonts.load(f).catch(function(){})})}}catch(e){}
   function draw(r){
-    var W=1080,H=2400,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
+    var W=1080,H=r.reste?2580:2520,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
     var INK='#13281f',MUTED='#7a8880',GOLD='#b8913d',LINE='#ebe4d2';
     var logo=emblem.complete&&emblem.naturalWidth;
     function spaced(t,px,y,sp,align){
@@ -710,11 +763,11 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
     }
     section('CLIENT');row('Nom',r.nom);row('WhatsApp',r.tel);y+=22;
     section('SÉJOUR');row('Logement',r.loge);row('Quartier',r.quartier);row('Formule',r.forf);row('Arrivée',r.debut);row('Départ',r.fin);row('Personnes',r.pers);y+=22;
-    section('PAIEMENT');row('Moyen de paiement',r.mode);row('Payé depuis le',r.payeur);row('Date du reçu',r.date);
+    section('PAIEMENT');row('Type de paiement',r.plan);row('Total du séjour',r.total);if(r.reste)row('Reste à l’arrivée',r.reste);row('Moyen de paiement',r.mode);row('Payé depuis le',r.payeur);row('Date du reçu',r.date);
     // Montant
     y+=26;rr(x,110,y,W-220,138,22);x.fillStyle='#fbf5e6';x.fill();x.strokeStyle='rgba(184,145,61,.55)';x.lineWidth=1.5;x.stroke();
     x.fillStyle=MUTED;x.font='600 20px '+SANS;spaced('MONTANT PAYÉ',150,y+80,5,'left');
-    x.textAlign='right';x.fillStyle=INK;x.font='500 72px '+SERIF;x.fillText(r.total,W-150,y+92);x.textAlign='center';
+    x.textAlign='right';x.fillStyle=INK;x.font='500 72px '+SERIF;x.fillText(r.verse,W-150,y+92);x.textAlign='center';
     // Cachet et signature
     var sy=y+138+70;
     x.fillStyle=GOLD;x.font='600 18px '+SANS;spaced('CACHET',300,sy,6,'center');spaced('SIGNATURE',W-300,sy,6,'center');
@@ -764,7 +817,7 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
   // ----- Mémoire : la réservation est retrouvée au retour du paiement -----
   function save(){
     try{localStorage.setItem(STORE,JSON.stringify({loge:S.loge,quartier:S.quartier,forf:S.forf,day:S.day?S.day.getTime():null,hour:S.hour,qty:S.qty,pers:S.pers,
-      mode:S.mode,ref:S.ref,stage:S.stage,waSent:S.waSent,nom:$('nom').value,tel:$('tel').value,payeur:$('payeur').value,t:Date.now()}))}catch(e){}
+      mode:S.mode,ref:S.ref,stage:S.stage,waSent:S.waSent,plan:S.plan,acompte:S.acompte,nom:$('nom').value,tel:$('tel').value,payeur:$('payeur').value,t:Date.now()}))}catch(e){}
   }
   (function restore(){
     var o=null;try{o=JSON.parse(localStorage.getItem(STORE)||'null')}catch(e){}
@@ -774,7 +827,7 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
     if(o.forf){S.qty=o.qty||1;setForf(o.forf)}
     if(o.day){var i=Math.round((new Date(o.day).setHours(0,0,0,0)-base.getTime())/86400000);if(i>=0&&i<30)setDay(i)}
     if(o.hour!==null&&o.hour!==undefined)setHour(o.hour);
-    S.pers=o.pers||2;S.mode=o.mode||null;S.ref=o.ref||null;S.stage=o.stage||'';S.waSent=!!o.waSent;
+    S.pers=o.pers||2;S.mode=o.mode||null;S.plan=o.plan||'acompte';S.acompte=o.acompte||null;S.ref=o.ref||null;S.stage=o.stage||'';S.waSent=!!o.waSent;
     $('nom').value=o.nom||'';$('tel').value=o.tel||'';$('payeur').value=o.payeur||'';
     $('waDone').hidden=!S.waSent;update();
     if(S.stage==='paying')setTimeout(showDone,600);

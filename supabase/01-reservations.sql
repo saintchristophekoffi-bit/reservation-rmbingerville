@@ -15,14 +15,20 @@ create table public.reservations (
   arrivee            timestamptz not null,
   depart             timestamptz not null,
   personnes          int  not null check (personnes between 1 and 10),
-  montant            int  not null check (montant > 0),
+  montant            int  not null check (montant > 0),                 -- total du séjour
+  montant_verse      int  not null check (montant_verse > 0),           -- acompte ou totalité payé
+  type_paiement      text not null check (type_paiement in ('Acompte', 'Totalité')),
   moyen_paiement     text not null check (moyen_paiement in ('Wave', 'Orange Money')),
   numero_payeur      text check (numero_payeur is null or char_length(numero_payeur) between 8 and 30),
   statut             text not null default 'En attente de vérification'
                      check (statut in ('En attente de vérification', 'Confirmée', 'Refusée')),
   cree_le            timestamptz not null default now(),
   constraint reservations_reference_unique unique (reference),
-  constraint reservations_depart_apres_arrivee check (depart > arrivee)
+  constraint reservations_depart_apres_arrivee check (depart > arrivee),
+  constraint reservations_verse_max check (montant_verse <= montant),
+  -- Acompte minimum : 5 000 F pour un studio, 10 000 F pour un deux pièces
+  constraint reservations_acompte_min check (
+    montant_verse >= least(montant, case logement when 'Studio' then 5000 else 10000 end))
 );
 
 create index reservations_arrivee_idx on public.reservations (arrivee);
@@ -32,7 +38,8 @@ create index reservations_arrivee_idx on public.reservations (arrivee);
 alter table public.reservations enable row level security;
 revoke all on public.reservations from anon, authenticated;
 grant insert (reference, nom, whatsapp, logement, quartier, formule, quantite,
-              arrivee, depart, personnes, montant, moyen_paiement, numero_payeur)
+              arrivee, depart, personnes, montant, montant_verse, type_paiement,
+              moyen_paiement, numero_payeur)
   on public.reservations to anon;
 
 create policy "La page publique ajoute seulement des réservations en attente"
