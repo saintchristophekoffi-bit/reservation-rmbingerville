@@ -666,7 +666,7 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
   // On charge les polices du reçu à l'avance (le dessin doit être immédiat au clic)
   try{if(document.fonts&&document.fonts.load){['400 70px "Cormorant Garamond"','500 46px "Cormorant Garamond"','italic 400 38px "Cormorant Garamond"','600 28px Manrope','400 27px Manrope','500 22px Manrope'].forEach(function(f){document.fonts.load(f).catch(function(){})})}}catch(e){}
   function draw(r){
-    var W=1080,H=2060,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
+    var W=1080,H=2400,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
     var INK='#13281f',MUTED='#7a8880',GOLD='#b8913d',LINE='#ebe4d2';
     var logo=emblem.complete&&emblem.naturalWidth;
     function spaced(t,px,y,sp,align){
@@ -715,6 +715,32 @@ footer em{font-family:var(--serif);font-size:1.05rem;letter-spacing:0;color:var(
     y+=26;rr(x,110,y,W-220,138,22);x.fillStyle='#fbf5e6';x.fill();x.strokeStyle='rgba(184,145,61,.55)';x.lineWidth=1.5;x.stroke();
     x.fillStyle=MUTED;x.font='600 20px '+SANS;spaced('MONTANT PAYÉ',150,y+80,5,'left');
     x.textAlign='right';x.fillStyle=INK;x.font='500 72px '+SERIF;x.fillText(r.total,W-150,y+92);x.textAlign='center';
+    // Cachet et signature
+    var sy=y+138+70;
+    x.fillStyle=GOLD;x.font='600 18px '+SANS;spaced('CACHET',300,sy,6,'center');spaced('SIGNATURE',W-300,sy,6,'center');
+    // -- cachet rond, comme un vrai tampon (encre verte légèrement irrégulière)
+    var R=118,sc=document.createElement('canvas');sc.width=sc.height=R*2+20;var s=sc.getContext('2d'),c0=R+10;
+    s.strokeStyle=s.fillStyle='#1d5a40';
+    s.lineWidth=6;s.beginPath();s.arc(c0,c0,R-4,0,Math.PI*2);s.stroke();
+    s.lineWidth=1.8;s.beginPath();s.arc(c0,c0,R-16,0,Math.PI*2);s.stroke();
+    s.beginPath();s.arc(c0,c0,R-54,0,Math.PI*2);s.stroke();
+    s.font='700 19px '+SANS;s.textAlign='center';s.textBaseline='middle';
+    var ring='RÉSIDENCE MEUBLÉE ★ BINGERVILLE ★ ',chars=Array.from(ring),step=Math.PI*2/chars.length;
+    chars.forEach(function(ch,i){s.save();s.translate(c0,c0);s.rotate(-Math.PI/2+i*step+step/2);s.translate(R-35,0);s.rotate(Math.PI/2);s.fillText(ch,0,0);s.restore()});
+    s.font='600 46px '+SERIF;s.fillText('RMB',c0,c0-6);
+    s.font='700 13px '+SANS;s.fillText('CÔTE D’IVOIRE',c0,c0+30);
+    s.globalCompositeOperation='destination-out';var seed=7;function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647}
+    for(var k=0;k<420;k++){s.globalAlpha=.25+rnd()*.6;s.beginPath();s.arc(rnd()*sc.width,rnd()*sc.height,.6+rnd()*2.2,0,Math.PI*2);s.fill()}
+    s.globalCompositeOperation='source-over';s.globalAlpha=1;
+    x.save();x.translate(300,sy+150);x.rotate(-.18);x.globalAlpha=.86;x.drawImage(sc,-c0,-c0);x.restore();x.globalAlpha=1;
+    // -- signature de la direction
+    var sig=['M177,29 C176,24 177,19 179,16 C170,14 150,13 128,12.5 C100,12 75,15 52,20 C35,25 20,33 12,43 C7,50 10,56 22,59 C45,63 80,64 120,64 C160,63.5 205,62 247,61',
+             'M124,40 C124,62 125,92 126,116',
+             'M128,98 C131,86 134,74 138,66 C144,78 150,90 157,96 C164,87 170,75 176,63 C180,55 183,49 186,47 C190,53 193,66 196,86'];
+    try{x.save();x.translate(W-300-150,sy+52);x.scale(1.16,1.16);x.strokeStyle='#14231c';x.lineCap='round';x.lineJoin='round';
+      [3.4,3.8,3.1].forEach(function(lw,i){x.lineWidth=lw;x.stroke(new Path2D(sig[i]))});x.restore()}catch(e){x.restore()}
+    x.strokeStyle='rgba(184,145,61,.6)';x.lineWidth=1.2;x.beginPath();x.moveTo(W-300-150,sy+206);x.lineTo(W-300+150,sy+206);x.stroke();
+    x.fillStyle=MUTED;x.font='400 22px '+SANS;x.fillText('La Direction',W-300,sy+240);
     // Pied du reçu
     var fy=H-220;
     var lg=x.createLinearGradient(W/2-160,0,W/2+160,0);lg.addColorStop(0,'rgba(184,145,61,0)');lg.addColorStop(.5,GOLD);lg.addColorStop(1,'rgba(184,145,61,0)');
