@@ -83,7 +83,7 @@ h1{font-family:var(--serif);font-weight:300;font-size:clamp(2.1rem,9vw,2.75rem);
 .num{font-family:var(--serif);font-style:italic;font-size:1.6rem;color:var(--gold);line-height:1}
 .step h2{font-family:var(--serif);font-weight:400;font-size:1.45rem;line-height:1.1}
 .q{font-size:.82rem;color:var(--gold-soft);margin:1.2rem 0 .6rem;font-weight:400}
-.q:first-of-type{margin-top:0}
+.step-head+.grp>.q{margin-top:0}
 
 /* Boutons de choix */
 .opts{display:grid;gap:.6rem}
@@ -135,7 +135,7 @@ h1{font-family:var(--serif);font-weight:300;font-size:clamp(2.1rem,9vw,2.75rem);
 .chip[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(180deg,#ecd291,#c9a24c);color:#1b1508;box-shadow:0 6px 20px rgba(214,178,94,.25)}
 .chip[aria-pressed="true"] .d,.chip[aria-pressed="true"] .m{color:#3a2d0c}
 .chip:focus-visible{outline:2px solid var(--gold-soft);outline-offset:2px}
-.hours{display:none}.hours.show{display:block}
+.grp.hours{display:none}.grp.hours.show{display:block}
 
 /* Compteurs */
 .counter{display:flex;align-items:center;justify-content:space-between;padding:.55rem .6rem .55rem 1rem;border-radius:1rem;border:1px solid rgba(243,238,226,.1);background:rgba(255,255,255,.02);margin-top:.6rem}
@@ -199,9 +199,52 @@ input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(214,
 footer{text-align:center;font-size:.72rem;color:rgba(159,181,168,.6);margin-top:2rem}
 footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);display:block;margin-bottom:.3rem}
 
+/* Champ oublié : signalé à l'endroit exact */
+.grp{border-radius:1rem;transition:outline-color .3s}
+.grp.need{outline:2px solid #e08a7a;outline-offset:.45rem;animation:shake .4s ease 2}
+.grp.need input{border-color:#e08a7a}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.fmsg{font-size:.84rem;color:#f2ad9e;margin-top:.55rem;font-weight:500}
+.fmsg:empty{display:none}
+.fmsg::before{content:"⚠ "}
+.grp+.grp{margin-top:0}
+
+/* Étape 4 */
+.btn-wa{color:#fff;background:linear-gradient(180deg,#2fd36f,#1c9e50);box-shadow:0 10px 28px rgba(37,211,102,.22),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-wa svg{width:1.25rem;height:1.25rem;fill:#fff;flex:none}
+.btn-wa:active{transform:scale(.985)}
+.sent{font-size:.84rem;color:#7fe0a5;margin-top:.55rem;text-align:center;font-weight:500}
+.verify{margin:1.1rem 0;padding:1rem;border:1px solid rgba(214,178,94,.25);background:rgba(214,178,94,.05)}
+.verify-title{display:flex;align-items:center;gap:.5rem;font-family:var(--serif);font-size:1.2rem;color:var(--gold-soft);margin-bottom:.75rem}
+.verify-title svg{width:1.2rem;height:1.2rem;stroke:var(--gold);fill:none;stroke-width:1.6;flex:none}
+.same{font:inherit;font-size:.8rem;color:var(--gold);background:none;border:none;text-decoration:underline;text-underline-offset:3px;cursor:pointer;margin-top:.55rem;padding:.2rem 0}
+.verify-text{font-size:.78rem;color:var(--sage);margin-top:.3rem}
+.link{display:block;margin:1rem auto 0;font:inherit;font-size:.84rem;color:var(--gold-soft);background:none;border:none;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+/* Message de fin */
+.done{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:1.25rem;background:rgba(3,12,9,.74);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);opacity:0;transition:opacity .3s}
+.done[hidden]{display:none}
+.done.show{opacity:1}
+.done-card{width:100%;max-width:24rem;max-height:100%;overflow:auto;text-align:center;padding:2rem 1.4rem 1.5rem;border-radius:1.5rem;background:linear-gradient(180deg,#102c21,#0a1f17);border:1px solid rgba(214,178,94,.35);box-shadow:0 30px 80px rgba(0,0,0,.5);transform:translateY(14px) scale(.97);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.done.show .done-card{transform:none}
+.check{width:5.2rem;height:5.2rem;margin:0 auto 1.2rem;border-radius:50%;box-shadow:0 0 0 8px rgba(31,179,90,.14),0 0 44px rgba(31,179,90,.4)}
+.check svg{display:block;width:100%;height:100%}
+.check-c{fill:#1fb35a;transform-box:fill-box;transform-origin:center;transform:scale(0)}
+.check-v{fill:none;stroke:#fff;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40}
+.done.show .check-c{animation:popc .5s cubic-bezier(.2,.9,.3,1.3) .1s forwards}
+.done.show .check-v{animation:drawv .45s ease .55s forwards}
+@keyframes popc{to{transform:scale(1)}}
+@keyframes drawv{to{stroke-dashoffset:0}}
+.done h2{font-family:var(--serif);font-weight:400;font-size:1.75rem;line-height:1.15;margin-bottom:.7rem;color:var(--ivory)}
+.done-text{font-size:.94rem;color:var(--ivory);opacity:.92}
+.done-ref{margin:1.1rem 0 .5rem;font-size:.8rem;color:var(--sage)}
+.done-ref b{display:block;font-family:var(--serif);font-size:1.5rem;color:var(--gold-soft);font-weight:500;letter-spacing:.03em}
+.done-next{font-size:.8rem;color:var(--sage);margin-bottom:1.2rem}
+
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}
   .logo{opacity:1!important;filter:drop-shadow(0 0 22px rgba(230,196,112,.45))!important;transform:translate(-50%,-50%)!important}
-  .halo{opacity:1!important;transform:translate(-50%,-50%)!important}.rays,.nature .side,.nature .bloom,.hero>*{opacity:1!important;transform:none!important}}
+  .halo{opacity:1!important;transform:translate(-50%,-50%)!important}.rays,.nature .side,.nature .bloom,.hero>*{opacity:1!important;transform:none!important}
+  .check-c{transform:none!important}.check-v{stroke-dashoffset:0!important}}
 @media (min-width:640px){.visual{margin-bottom:-2rem}}
 </style>
 </head>
@@ -277,33 +320,46 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
   <section class="step" aria-labelledby="s1">
     <div class="step-head"><span class="num">1</span><h2 id="s1">Votre séjour</h2></div>
 
-    <p class="q">Votre logement</p>
-    <div class="opts two" id="logements">
-      <button type="button" class="opt logement" data-v="studio" aria-pressed="false"><span class="tick"></span>
-        <svg class="ico" viewBox="0 0 32 32"><rect x="5" y="9" width="22" height="18" rx="1.5"/><path d="M5 15h22M12 27v-6h8v6"/><path d="M9 9l7-5 7 5"/></svg>
-        <span class="t">Studio</span><span class="s">Confort et intimité</span></button>
-      <button type="button" class="opt logement" data-v="2p" aria-pressed="false"><span class="tick"></span>
-        <svg class="ico" viewBox="0 0 32 32"><rect x="3" y="11" width="13" height="16" rx="1.5"/><rect x="16" y="7" width="13" height="20" rx="1.5"/><path d="M8 27v-5h3v5M21 27v-5h3v5M19 12h2M24 12h2M19 16h2M24 16h2"/></svg>
-        <span class="t">Deux pièces</span><span class="s">Chambre et salon</span></button>
+    <div class="grp" id="g-loge">
+      <p class="q">Votre logement</p>
+      <div class="opts two" id="logements">
+        <button type="button" class="opt logement" data-v="studio" aria-pressed="false"><span class="tick"></span>
+          <svg class="ico" viewBox="0 0 32 32"><rect x="5" y="9" width="22" height="18" rx="1.5"/><path d="M5 15h22M12 27v-6h8v6"/><path d="M9 9l7-5 7 5"/></svg>
+          <span class="t">Studio</span><span class="s">Confort et intimité</span></button>
+        <button type="button" class="opt logement" data-v="2p" aria-pressed="false"><span class="tick"></span>
+          <svg class="ico" viewBox="0 0 32 32"><rect x="3" y="11" width="13" height="16" rx="1.5"/><rect x="16" y="7" width="13" height="20" rx="1.5"/><path d="M8 27v-5h3v5M21 27v-5h3v5M19 12h2M24 12h2M19 16h2M24 16h2"/></svg>
+          <span class="t">Deux pièces</span><span class="s">Chambre et salon</span></button>
+      </div>
+      <p class="fmsg" role="alert"></p>
     </div>
 
-    <p class="q">Votre quartier</p>
-    <button type="button" class="picker" id="qBtn" aria-expanded="false" aria-controls="qDrawer">
-      <svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span class="lab"><span class="t" id="qTitle">Choisir un quartier</span><span class="s" id="qSub">Bingerville et ses environs</span></span>
-      <span class="arrow" aria-hidden="true"></span>
-    </button>
-    <div class="drawer" id="qDrawer"><div><div class="opts" id="quartiers" role="group" aria-label="Quartiers"></div></div></div>
+    <div class="grp" id="g-quartier">
+      <p class="q">Votre quartier</p>
+      <button type="button" class="picker" id="qBtn" aria-expanded="false" aria-controls="qDrawer">
+        <svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span class="lab"><span class="t" id="qTitle">Choisir un quartier</span><span class="s" id="qSub">Bingerville et ses environs</span></span>
+        <span class="arrow" aria-hidden="true"></span>
+      </button>
+      <p class="fmsg" role="alert"></p>
+      <div class="drawer" id="qDrawer"><div><div class="opts" id="quartiers" role="group" aria-label="Quartiers"></div></div></div>
+    </div>
 
-    <p class="q">Votre formule</p>
-    <div class="opts" id="forfaits"></div>
+    <div class="grp" id="g-forf">
+      <p class="q">Votre formule</p>
+      <div class="opts" id="forfaits"></div>
+      <p class="fmsg" role="alert"></p>
+    </div>
 
-    <p class="q">Date d’arrivée</p>
-    <div class="scroller" id="days" role="group" aria-label="Choisir la date"></div>
+    <div class="grp" id="g-day">
+      <p class="q">Date d’arrivée</p>
+      <div class="scroller" id="days" role="group" aria-label="Choisir la date"></div>
+      <p class="fmsg" role="alert"></p>
+    </div>
 
-    <div class="hours" id="hoursBox">
+    <div class="grp hours" id="g-hour">
       <p class="q">Heure d’arrivée</p>
       <div class="scroller" id="hours" role="group" aria-label="Choisir l’heure"></div>
+      <p class="fmsg" role="alert"></p>
     </div>
 
     <div class="counter qty" id="qtyBox">
@@ -319,39 +375,54 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
       <div class="when" id="recWhen"></div>
       <div class="tot"><span>Total à payer</span><b id="recTot"></b></div>
     </div>
-    <div class="msg" id="s1Msg" role="status"></div>
   </section>
 
   <section class="step" aria-labelledby="s2">
     <div class="step-head"><span class="num">2</span><h2 id="s2">Vos coordonnées</h2></div>
-    <div class="field"><label for="nom">Nom et prénom</label><input id="nom" autocomplete="name" placeholder="Ex. Kouassi Aya"></div>
-    <div class="field" style="margin-bottom:0"><label for="tel">Numéro WhatsApp</label><input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00"></div>
+    <div class="grp field" id="g-nom"><label for="nom">Nom et prénom</label><input id="nom" autocomplete="name" placeholder="Ex. Kouassi Aya"><p class="fmsg" role="alert"></p></div>
+    <div class="grp field" id="g-tel" style="margin-bottom:0"><label for="tel">Numéro WhatsApp</label><input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00"><p class="fmsg" role="alert"></p></div>
   </section>
 
   <section class="step" aria-labelledby="s3">
     <div class="step-head"><span class="num">3</span><h2 id="s3">Paiement</h2></div>
     <p class="amount" id="payAmount">Choisissez d’abord votre séjour.</p>
-    <a class="pay" id="payWave" href="https://pay.wave.com/m/M_ci_1PtQyn9MBIqb/c/ci/" target="_blank" rel="noopener">
-      <span class="tile wave"><img src="images/wave.png" alt="" width="120" height="120"></span>
-      <span class="pay-text"><strong>Payer avec Wave</strong><span>Paiement direct et sécurisé</span></span><span class="chev" aria-hidden="true"></span></a>
-    <a class="pay" id="payOM" href="https://multi.app.orange-money.com/app/v1/kapptivate/qrcode/odyssee/?id=codgen70-91b7d5e5b1d3402a8c316797f8418d17&amp;v=1" target="_blank" rel="noopener">
-      <span class="tile om"><img src="images/orange-money-icone.png" alt="" width="89" height="46"></span>
-      <span class="pay-text"><strong>Payer avec Orange Money</strong><span>Paiement direct et sécurisé</span></span><span class="chev" aria-hidden="true"></span></a>
+    <div class="grp" id="g-pay">
+      <a class="pay" id="payWave" data-mode="Wave" href="https://pay.wave.com/m/M_ci_1PtQyn9MBIqb/c/ci/">
+        <span class="tile wave"><img src="images/wave.png" alt="" width="120" height="120"></span>
+        <span class="pay-text"><strong>Payer avec Wave</strong><span>Paiement direct et sécurisé</span></span><span class="chev" aria-hidden="true"></span></a>
+      <a class="pay" id="payOM" data-mode="Orange Money" href="https://multi.app.orange-money.com/app/v1/kapptivate/qrcode/odyssee/?id=codgen70-91b7d5e5b1d3402a8c316797f8418d17&amp;v=1">
+        <span class="tile om"><img src="images/orange-money-icone.png" alt="" width="89" height="46"></span>
+        <span class="pay-text"><strong>Payer avec Orange Money</strong><span>Paiement direct et sécurisé</span></span><span class="chev" aria-hidden="true"></span></a>
+      <p class="fmsg" role="alert"></p>
+    </div>
     <p class="safe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Nous ne vous demanderons jamais votre code secret.</p>
-    <div class="msg" id="payMsg" role="status"></div>
-    <div class="field" style="margin:.4rem 0 0"><label for="trans">Numéro de transaction, reçu après le paiement</label><input id="trans" autocomplete="off" placeholder="Ex. T2611XXXXXXXX"></div>
+    <p class="notice" style="margin-top:0">Une fois le paiement terminé, revenez simplement sur cette page : votre réservation s’affiche automatiquement.</p>
   </section>
 
   <section class="step" aria-labelledby="s4">
     <div class="step-head"><span class="num">4</span><h2 id="s4">Votre reçu</h2></div>
+    <div class="grp" id="g-wa">
+      <a class="btn btn-wa" id="wa" href="https://wa.me/2250777938188" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2s.2-1.1.1-1.2l-.4-.2z"/></svg>
+        <span>Envoyer la capture du dépôt sur WhatsApp</span></a>
+      <p class="sent" id="waDone" hidden>✓ Capture envoyée</p>
+      <p class="fmsg" role="alert"></p>
+    </div>
+
+    <div class="grp verify" id="g-payeur">
+      <p class="verify-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Vérification du paiement</p>
+      <label for="payeur">Numéro Wave ou Orange Money qui a payé</label>
+      <input id="payeur" type="tel" inputmode="tel" autocomplete="off" placeholder="07 00 00 00 00">
+      <button type="button" class="same" id="sameTel">C’est mon numéro WhatsApp</button>
+      <p class="verify-text">Nous comparons ce numéro avec le dépôt reçu avant de confirmer votre séjour.</p>
+      <p class="fmsg" role="alert"></p>
+    </div>
+
     <button class="btn btn-gold" id="dl" type="button">Télécharger mon reçu</button>
-    <div class="msg" id="dlMsg" role="status"></div>
-    <div class="receipt-ok" id="ok">Votre numéro de réservation<div class="ref" id="refShow"></div>Envoyez maintenant votre reçu sur WhatsApp pour que nous confirmions votre séjour.
+    <div class="receipt-ok" id="ok">Votre numéro de réservation<div class="ref" id="refShow"></div>Votre reçu est enregistré. Il indique « En attente de vérification » jusqu’à la confirmation de votre paiement.
       <img id="rcImg" alt="Votre reçu de réservation" style="display:block;width:100%;margin-top:.9rem;border-radius:.8rem;border:1px solid rgba(214,178,94,.3)">
-      <small style="display:block;margin-top:.5rem;color:var(--sage)">Si le téléchargement ne démarre pas, faites une capture d’écran de ce reçu.</small></div>
-    <a class="btn btn-ghost" id="wa" href="https://wa.me/2250777938188" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2s.2-1.1.1-1.2l-.4-.2z"/></svg>
-      Envoyer mon reçu sur WhatsApp</a>
+      <small style="display:block;margin-top:.5rem;color:var(--sage)">Si le téléchargement ne démarre pas, faites une capture d’écran de ce reçu.</small>
+      <button type="button" class="link" id="again">Faire une nouvelle réservation</button></div>
     <p class="notice">Votre réservation est <b>confirmée après vérification</b> de votre paiement par notre équipe. Vous recevrez un message de confirmation sur WhatsApp.</p>
   </section>
 
@@ -362,10 +433,23 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
   <footer><em>Plus qu’un séjour… une expérience.</em>Résidence Meublée Bingerville · Bingerville, Côte d’Ivoire</footer>
 </main>
 
+<!-- Message de fin, affiché au retour du paiement -->
+<div class="done" id="done" hidden role="dialog" aria-modal="true" aria-labelledby="doneTitle">
+  <div class="done-card">
+    <div class="check" aria-hidden="true"><svg viewBox="0 0 52 52"><circle class="check-c" cx="26" cy="26" r="24"/><path class="check-v" d="M15 27l7 7 15-16"/></svg></div>
+    <h2 id="doneTitle">Réservation bien prise en compte</h2>
+    <p class="done-text">Votre réservation a bien été prise en compte. La Résidence Meublée Bingerville vous dit merci et à très bientôt pour votre séjour.</p>
+    <p class="done-ref">Réservation n° <b id="doneRef"></b></p>
+    <p class="done-next">Dernière étape : envoyez-nous la capture de votre dépôt, puis téléchargez votre reçu.</p>
+    <button type="button" class="btn btn-gold" id="doneGo">Continuer</button>
+  </div>
+</div>
+
 <script>
 (function(){
   var $=function(id){return document.getElementById(id)};
   var WHATSAPP='2250777938188';
+  var STORE='rmb-reservation';
   var LOGE={studio:'Studio','2p':'Deux pièces'};
   // Quartiers proposés
   var QUARTIERS=[
@@ -379,17 +463,30 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
     {id:'24h', t:'24 heures',      s:'De midi à midi',          price:{studio:20000,'2p':25000}, qty:'jours'},
     {id:'nuit',t:'Nuitée',         s:'De 18h à midi',           price:{studio:20000,'2p':20000}, qty:'nuits'}
   ];
-  var S={loge:null,quartier:null,forf:null,day:null,hour:null,qty:1,pers:2,mode:null};
+  // stage : '' (en cours), 'paying' (parti payer), 'paid' (revenu du paiement)
+  var S={loge:null,quartier:null,forf:null,day:null,hour:null,qty:1,pers:2,mode:null,ref:null,stage:'',waSent:false};
   var money=function(n){return n.toLocaleString('fr-FR').replace(/ | /g,' ')+' F'};
   var JOURS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
   var JL=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'],ML=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
   function press(group,el){group.querySelectorAll('[aria-pressed]').forEach(function(b){b.setAttribute('aria-pressed',b===el?'true':'false')})}
 
-  // Logements
-  $('logements').addEventListener('click',function(e){var b=e.target.closest('.opt');if(!b)return;S.loge=b.dataset.v;press(this,b);renderForfaits();update()});
+  // ----- Champ oublié : on y amène le client et on le signale -----
+  function unflag(id){var g=$(id);if(!g)return;g.classList.remove('need');var m=g.querySelector('.fmsg');if(m)m.textContent=''}
+  function flag(id,msg,focusEl,scrollEl){
+    document.querySelectorAll('.grp.need').forEach(function(g){unflag(g.id)});
+    var g=$(id);g.classList.remove('need');void g.offsetWidth;g.classList.add('need');
+    var m=g.querySelector('.fmsg');if(m)m.textContent=msg;
+    (scrollEl||g).scrollIntoView({behavior:'smooth',block:scrollEl?'start':'center'});
+    if(focusEl)setTimeout(function(){focusEl.focus({preventScroll:true})},450);
+    return msg;
+  }
 
-  // Quartiers : bouton qui se déplie
+  // ----- Logement -----
+  function setLoge(v){S.loge=v;press($('logements'),$('logements').querySelector('[data-v="'+v+'"]'));unflag('g-loge');renderForfaits();update()}
+  $('logements').addEventListener('click',function(e){var b=e.target.closest('.opt');if(b){setLoge(b.dataset.v);save()}});
+
+  // ----- Quartier : bouton qui se déplie -----
   QUARTIERS.forEach(function(q){
     var b=document.createElement('button');b.type='button';b.className='opt quartier';b.dataset.v=q.t;b.setAttribute('aria-pressed','false');
     b.innerHTML='<span><span class="t">'+q.t+'</span>'+(q.s?'<span class="s">'+q.s+'</span>':'')+'</span><span class="tick"></span>';
@@ -397,13 +494,14 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
   });
   function openDrawer(open){$('qDrawer').classList.toggle('open',open);$('qBtn').setAttribute('aria-expanded',open?'true':'false')}
   $('qBtn').addEventListener('click',function(){openDrawer(this.getAttribute('aria-expanded')!=='true')});
-  $('quartiers').addEventListener('click',function(e){
-    var b=e.target.closest('.opt');if(!b)return;S.quartier=b.dataset.v;press(this,b);
-    var q=QUARTIERS.filter(function(x){return x.t===S.quartier})[0];
-    $('qTitle').textContent=q.t;$('qSub').textContent=q.s||'Bingerville';$('qBtn').classList.add('chosen');
-    setTimeout(function(){openDrawer(false)},180);update();
-  });
+  function setQuartier(v){
+    var q=QUARTIERS.filter(function(x){return x.t===v})[0];if(!q)return;
+    S.quartier=v;press($('quartiers'),$('quartiers').querySelector('[data-v="'+v+'"]'));
+    $('qTitle').textContent=q.t;$('qSub').textContent=q.s||'Bingerville';$('qBtn').classList.add('chosen');unflag('g-quartier');update();
+  }
+  $('quartiers').addEventListener('click',function(e){var b=e.target.closest('.opt');if(!b)return;setQuartier(b.dataset.v);save();setTimeout(function(){openDrawer(false)},180)});
 
+  // ----- Formule -----
   function renderForfaits(){
     var box=$('forfaits');box.innerHTML='';
     FORFAITS.forEach(function(f){
@@ -413,10 +511,11 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
       box.appendChild(b);
     });
   }
-  $('forfaits').addEventListener('click',function(e){var b=e.target.closest('.opt');if(!b)return;S.forf=b.dataset.v;press(this,b);S.qty=1;update()});
+  function setForf(v){S.forf=v;press($('forfaits'),$('forfaits').querySelector('[data-v="'+v+'"]'));unflag('g-forf');update()}
+  $('forfaits').addEventListener('click',function(e){var b=e.target.closest('.opt');if(b){S.qty=1;setForf(b.dataset.v);save()}});
   renderForfaits();
 
-  // Dates : les 30 prochains jours
+  // ----- Dates : les 30 prochains jours -----
   var base=new Date();base.setHours(0,0,0,0);
   for(var i=0;i<30;i++){
     var d=new Date(base);d.setDate(base.getDate()+i);
@@ -424,9 +523,10 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
     b.innerHTML='<span class="d">'+(i===0?'Auj.':i===1?'Demain':JOURS[d.getDay()])+'</span><span class="n">'+d.getDate()+'</span><span class="m">'+MOIS[d.getMonth()]+'</span>';
     $('days').appendChild(b);
   }
-  $('days').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;var d=new Date(base);d.setDate(base.getDate()+(+b.dataset.i));S.day=d;press(this,b);renderHours();update()});
+  function setDay(i){var b=$('days').querySelector('[data-i="'+i+'"]');if(!b)return;var d=new Date(base);d.setDate(base.getDate()+i);S.day=d;press($('days'),b);unflag('g-day');renderHours();update()}
+  $('days').addEventListener('click',function(e){var b=e.target.closest('.chip');if(b){setDay(+b.dataset.i);save()}});
 
-  // Heures (pour la formule 2 heures)
+  // ----- Heures (formule 2 heures) -----
   function renderHours(){
     var box=$('hours');box.innerHTML='';var now=new Date();
     for(var h=8;h<=22;h++){
@@ -436,14 +536,15 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
     if(!box.children.length){box.innerHTML='<span style="font-size:.82rem;color:var(--sage)">Plus de créneau aujourd’hui, choisissez demain.</span>';S.hour=null}
     else if(S.hour!==null&&!box.querySelector('[data-h="'+S.hour+'"]'))S.hour=null;
   }
-  $('hours').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;S.hour=+b.dataset.h;press(this,b);update()});
+  function setHour(h){var b=$('hours').querySelector('[data-h="'+h+'"]');if(!b)return;S.hour=h;press($('hours'),b);unflag('g-hour');update()}
+  $('hours').addEventListener('click',function(e){var b=e.target.closest('.chip');if(b){setHour(+b.dataset.h);save()}});
   renderHours();
 
-  // Compteurs
-  $('qMinus').onclick=function(){if(S.qty>1){S.qty--;update()}};
-  $('qPlus').onclick=function(){if(S.qty<30){S.qty++;update()}};
-  $('pMinus').onclick=function(){if(S.pers>1){S.pers--;update()}};
-  $('pPlus').onclick=function(){if(S.pers<10){S.pers++;update()}};
+  // ----- Compteurs -----
+  $('qMinus').onclick=function(){if(S.qty>1){S.qty--;update();save()}};
+  $('qPlus').onclick=function(){if(S.qty<30){S.qty++;update();save()}};
+  $('pMinus').onclick=function(){if(S.pers>1){S.pers--;update();save()}};
+  $('pPlus').onclick=function(){if(S.pers<10){S.pers++;update();save()}};
 
   function forf(){return FORFAITS.filter(function(f){return f.id===S.forf})[0]}
   function total(){var f=forf();return f&&S.loge?f.price[S.loge]*(f.qty?S.qty:1):0}
@@ -459,48 +560,88 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
 
   function update(){
     var f=forf();
-    $('hoursBox').classList.toggle('show',!!f&&f.id==='2h');
+    $('g-hour').classList.toggle('show',!!f&&f.id==='2h');
     var showQ=!!f&&!!f.qty;$('qtyBox').classList.toggle('show',showQ);
     if(showQ){$('qtyLab').firstChild.nodeValue=f.qty==='nuits'?'Nombre de nuits':'Nombre de jours';$('qtySub').textContent=f.s}
     $('qVal').textContent=S.qty;$('qMinus').disabled=S.qty<=1;$('pVal').textContent=S.pers;$('pMinus').disabled=S.pers<=1;
     var p=periode(),t=total();
     if(p&&t){$('recWhen').textContent=LOGE[S.loge]+(S.quartier?' à '+S.quartier:'')+' · '+f.t+(f.qty&&S.qty>1?' × '+S.qty:'')+' · '+p.court;$('recTot').textContent=money(t);$('recap').classList.add('show');
-      $('payAmount').innerHTML='Montant à payer<br><b>'+money(t)+'</b>';$('s1Msg').textContent=''}
+      $('payAmount').innerHTML='Montant à payer<br><b>'+money(t)+'</b>'}
     else{$('recap').classList.remove('show');$('payAmount').textContent='Choisissez d’abord votre séjour.'}
   }
   update();
 
-  function checkSejour(){
-    if(!S.loge)return 'Choisissez votre logement.';
-    if(!S.quartier)return 'Choisissez votre quartier.';
-    if(!S.forf)return 'Choisissez votre formule.';
-    if(!S.day)return 'Choisissez votre date d’arrivée.';
-    if(S.forf==='2h'&&S.hour===null)return 'Choisissez votre heure d’arrivée.';
-    return '';
-  }
+  // ----- Vérification, dans l'ordre de la page -----
   function checkAll(){
-    var m=checkSejour();if(m){$('s1').scrollIntoView({behavior:'smooth',block:'start'});$('s1Msg').textContent=m;return m}
-    var bad=[];if($('nom').value.trim().length<3)bad.push('nom');if($('tel').value.replace(/\D/g,'').length<8)bad.push('tel');
-    bad.forEach(function(i){$(i).classList.add('err')});if(bad.length){$(bad[0]).focus();return 'Ajoutez votre nom et votre numéro WhatsApp.'}
+    if(!S.loge)return flag('g-loge','Choisissez votre logement.');
+    if(!S.quartier){openDrawer(true);return flag('g-quartier','Choisissez votre quartier dans la liste.',null,$('g-quartier'))}
+    if(!S.forf)return flag('g-forf','Choisissez votre formule.');
+    if(!S.day)return flag('g-day','Choisissez votre date d’arrivée.');
+    if(S.forf==='2h'&&S.hour===null)return flag('g-hour','Choisissez votre heure d’arrivée.');
+    if($('nom').value.trim().length<3)return flag('g-nom','Écrivez votre nom et prénom.',$('nom'));
+    if($('tel').value.replace(/\D/g,'').length<8)return flag('g-tel','Écrivez votre numéro WhatsApp.',$('tel'));
     return '';
   }
-  ['nom','tel','trans'].forEach(function(i){$(i).addEventListener('input',function(){this.classList.remove('err')})});
-
-  ['payWave','payOM'].forEach(function(id){$(id).addEventListener('click',function(e){
-    var m=checkAll();if(m){e.preventDefault();$('payMsg').textContent=m;return}
-    $('payMsg').textContent='';S.mode=id==='payWave'?'Wave':'Orange Money';
-  })});
-
-  // Téléchargement du reçu (téléchargement normal du navigateur)
-  function saveFile(name,blob){
-    try{var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},60000)}catch(e){}
-  }
+  ['nom','tel','payeur'].forEach(function(i){$(i).addEventListener('input',function(){unflag('g-'+i);save()})});
 
   // Numéro de réservation : RMB-AAMMJJ-XXXX
-  function ref(){
+  function newRef(){
     var d=new Date(),y=String(d.getFullYear()).slice(2),m=('0'+(d.getMonth()+1)).slice(-2),j=('0'+d.getDate()).slice(-2);
     var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='',r=new Uint8Array(4);(window.crypto||window.msCrypto).getRandomValues(r);
     for(var i=0;i<4;i++)s+=c[r[i]%c.length];return 'RMB-'+y+m+j+'-'+s;
+  }
+
+  // ----- Paiement : on garde la réservation en mémoire, puis on part payer -----
+  ['payWave','payOM'].forEach(function(id){$(id).addEventListener('click',function(e){
+    if(checkAll()){e.preventDefault();return}
+    S.mode=this.dataset.mode;if(!S.ref)S.ref=newRef();S.stage='paying';save();
+  })});
+
+  // ----- Retour du paiement : message de fin -----
+  function showDone(){
+    if(S.stage!=='paying')return;
+    S.stage='paid';save();
+    $('doneRef').textContent=S.ref;
+    var box=$('done');box.hidden=false;requestAnimationFrame(function(){box.classList.add('show')});
+    document.body.style.overflow='hidden';
+    setTimeout(function(){$('doneGo').focus({preventScroll:true})},300);
+  }
+  $('doneGo').addEventListener('click',function(){
+    var box=$('done');box.classList.remove('show');document.body.style.overflow='';
+    setTimeout(function(){box.hidden=true},300);
+    $('s4').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  var hiddenAt=0;
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='hidden')hiddenAt=Date.now();
+    else if(S.stage==='paying'&&hiddenAt&&Date.now()-hiddenAt>1500)setTimeout(showDone,400);
+  });
+  window.addEventListener('pageshow',function(e){if(e.persisted&&S.stage==='paying')setTimeout(showDone,400)});
+
+  // ----- Étape 4 : capture du dépôt sur WhatsApp -----
+  function needPayment(){
+    if(checkAll())return true;
+    if(!S.ref||!S.mode){flag('g-pay','Payez d’abord votre réservation avec Wave ou Orange Money.');return true}
+    return false;
+  }
+  function details(){
+    var f=forf(),p=periode();
+    return {ref:S.ref,nom:$('nom').value.trim(),tel:$('tel').value.trim(),loge:LOGE[S.loge],quartier:S.quartier,
+      forf:f.t+(f.qty?' × '+S.qty+' '+(S.qty>1?f.qty:f.qty.slice(0,-1)):''),debut:p.debut,fin:p.fin,pers:String(S.pers),
+      mode:S.mode,payeur:$('payeur').value.trim(),date:new Date().toLocaleDateString('fr-FR'),total:money(total())};
+  }
+  $('wa').addEventListener('click',function(e){
+    if(needPayment()){e.preventDefault();return}
+    var r=details();
+    var txt='Bonjour Résidence Meublée Bingerville, voici la capture de mon dépôt.\n\nRéservation : '+r.ref+'\nNom : '+r.nom+'\nLogement : '+r.loge+'\nQuartier : '+r.quartier+'\nFormule : '+r.forf+'\nArrivée : '+r.debut+'\nDépart : '+r.fin+'\nPersonnes : '+r.pers+'\nMontant payé : '+r.total+'\nPaiement : '+r.mode+'\n\n(Capture du dépôt jointe)';
+    this.href='https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(txt);
+    S.waSent=true;save();$('waDone').hidden=false;unflag('g-wa');
+  });
+  $('sameTel').addEventListener('click',function(){$('payeur').value=$('tel').value;unflag('g-payeur');save()});
+
+  // ----- Reçu -----
+  function saveFile(name,blob){
+    try{var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},60000)}catch(e){}
   }
   function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
   function fit(x,t,max){if(x.measureText(t).width<=max)return t;while(t.length>1&&x.measureText(t+'…').width>max)t=t.slice(0,-1);return t+'…'}
@@ -515,7 +656,7 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
     x.fillStyle='#d6b25e';x.font='300 64px Georgia, serif';x.fillText('Reçu de réservation',W/2,430);
     x.fillStyle='#f3eee2';x.font='400 46px Georgia, serif';x.fillText(r.ref,W/2,510);
     x.fillStyle='rgba(214,178,94,.15)';rr(x,W/2-230,545,460,60,30);x.fill();x.fillStyle='#eadbb0';x.font='500 26px system-ui, sans-serif';x.fillText('En attente de vérification',W/2,585);
-    var rows=[['Client',r.nom],['WhatsApp',r.tel],['Logement',r.loge],['Quartier',r.quartier],['Formule',r.forf],['Arrivée',r.debut],['Départ',r.fin],['Personnes',r.pers],['Paiement',r.mode],['N° de transaction',r.trans],['Date du reçu',r.date]];
+    var rows=[['Client',r.nom],['WhatsApp',r.tel],['Logement',r.loge],['Quartier',r.quartier],['Formule',r.forf],['Arrivée',r.debut],['Départ',r.fin],['Personnes',r.pers],['Paiement',r.mode],['Payé depuis le',r.payeur],['Date du reçu',r.date]];
     var y=690;rows.forEach(function(row){x.textAlign='left';x.fillStyle='#9fb5a8';x.font='400 28px system-ui, sans-serif';x.fillText(row[0],110,y);
       x.textAlign='right';x.fillStyle='#f3eee2';x.font='500 30px system-ui, sans-serif';x.fillText(fit(x,String(row[1]),600),W-110,y);
       x.strokeStyle='rgba(243,238,226,.08)';x.lineWidth=1;x.beginPath();x.moveTo(110,y+28);x.lineTo(W-110,y+28);x.stroke();y+=66});
@@ -528,18 +669,33 @@ footer em{font-family:var(--serif);font-size:.95rem;color:var(--gold-soft);displ
   }
 
   $('dl').addEventListener('click',function(){
-    var m=checkAll();if(m){$('dlMsg').textContent=m;return}
-    if($('trans').value.trim().length<4){$('dlMsg').textContent='Ajoutez le numéro de transaction reçu après votre paiement.';$('trans').classList.add('err');$('trans').focus();return}
-    $('dlMsg').textContent='';
-    var f=forf(),p=periode();
-    var r={ref:ref(),nom:$('nom').value.trim(),tel:$('tel').value.trim(),loge:LOGE[S.loge],quartier:S.quartier,forf:f.t+(f.qty?' × '+S.qty+' '+(S.qty>1?f.qty:f.qty.slice(0,-1)):''),
-      debut:p.debut,fin:p.fin,pers:String(S.pers),mode:S.mode||'Wave ou Orange Money',trans:$('trans').value.trim(),date:new Date().toLocaleDateString('fr-FR'),total:money(total())};
-    var cv=draw(r);
+    if(needPayment())return;
+    if(!S.waSent){flag('g-wa','Envoyez d’abord la capture de votre dépôt sur WhatsApp.');return}
+    if($('payeur').value.replace(/\D/g,'').length<8){flag('g-payeur','Écrivez le numéro Wave ou Orange Money qui a payé.',$('payeur'));return}
+    var r=details(),cv=draw(r);
     try{$('rcImg').src=cv.toDataURL('image/png');cv.toBlob(function(b){if(b)saveFile('Recu-'+r.ref+'.png',b)},'image/png')}catch(e){}
     $('refShow').textContent=r.ref;$('ok').classList.add('show');
-    var txt='Bonjour Résidence Meublée Bingerville, voici ma réservation.\n\nRéservation : '+r.ref+'\nNom : '+r.nom+'\nLogement : '+r.loge+'\nQuartier : '+r.quartier+'\nFormule : '+r.forf+'\nArrivée : '+r.debut+'\nDépart : '+r.fin+'\nPersonnes : '+r.pers+'\nMontant : '+r.total+'\nPaiement : '+r.mode+'\nN° de transaction : '+r.trans;
-    $('wa').href='https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(txt);
   });
+  $('again').addEventListener('click',function(){try{localStorage.removeItem(STORE)}catch(e){}location.reload()});
+
+  // ----- Mémoire : la réservation est retrouvée au retour du paiement -----
+  function save(){
+    try{localStorage.setItem(STORE,JSON.stringify({loge:S.loge,quartier:S.quartier,forf:S.forf,day:S.day?S.day.getTime():null,hour:S.hour,qty:S.qty,pers:S.pers,
+      mode:S.mode,ref:S.ref,stage:S.stage,waSent:S.waSent,nom:$('nom').value,tel:$('tel').value,payeur:$('payeur').value,t:Date.now()}))}catch(e){}
+  }
+  (function restore(){
+    var o=null;try{o=JSON.parse(localStorage.getItem(STORE)||'null')}catch(e){}
+    if(!o||!o.t||Date.now()-o.t>24*3600*1000)return;
+    if(o.loge)setLoge(o.loge);
+    if(o.quartier)setQuartier(o.quartier);
+    if(o.forf){S.qty=o.qty||1;setForf(o.forf)}
+    if(o.day){var i=Math.round((new Date(o.day).setHours(0,0,0,0)-base.getTime())/86400000);if(i>=0&&i<30)setDay(i)}
+    if(o.hour!==null&&o.hour!==undefined)setHour(o.hour);
+    S.pers=o.pers||2;S.mode=o.mode||null;S.ref=o.ref||null;S.stage=o.stage||'';S.waSent=!!o.waSent;
+    $('nom').value=o.nom||'';$('tel').value=o.tel||'';$('payeur').value=o.payeur||'';
+    $('waDone').hidden=!S.waSent;update();
+    if(S.stage==='paying')setTimeout(showDone,600);
+  })();
 })();
 </script>
 </body>

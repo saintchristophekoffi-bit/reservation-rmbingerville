@@ -17,18 +17,13 @@ create table public.reservations (
   personnes          int  not null check (personnes between 1 and 10),
   montant            int  not null check (montant > 0),
   moyen_paiement     text not null check (moyen_paiement in ('Wave', 'Orange Money')),
-  numero_transaction text not null check (char_length(numero_transaction) between 4 and 60),
+  numero_payeur      text check (numero_payeur is null or char_length(numero_payeur) between 8 and 30),
   statut             text not null default 'En attente de vérification'
                      check (statut in ('En attente de vérification', 'Confirmée', 'Refusée')),
   cree_le            timestamptz not null default now(),
   constraint reservations_reference_unique unique (reference),
   constraint reservations_depart_apres_arrivee check (depart > arrivee)
 );
-
--- Un numéro de transaction ne peut servir qu'une seule fois
--- (sans tenir compte des majuscules ni des espaces).
-create unique index reservations_transaction_unique
-  on public.reservations (upper(regexp_replace(numero_transaction, '\s', '', 'g')));
 
 create index reservations_arrivee_idx on public.reservations (arrivee);
 
@@ -37,7 +32,7 @@ create index reservations_arrivee_idx on public.reservations (arrivee);
 alter table public.reservations enable row level security;
 revoke all on public.reservations from anon, authenticated;
 grant insert (reference, nom, whatsapp, logement, quartier, formule, quantite,
-              arrivee, depart, personnes, montant, moyen_paiement, numero_transaction)
+              arrivee, depart, personnes, montant, moyen_paiement, numero_payeur)
   on public.reservations to anon;
 
 create policy "La page publique ajoute seulement des réservations en attente"
